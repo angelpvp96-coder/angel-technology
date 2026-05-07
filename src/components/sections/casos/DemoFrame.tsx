@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DemoIframe } from "./DemoIframe";
 import { ExternalLink } from "lucide-react";
+import { DemoIframe } from "./DemoIframe";
+import { BrowserFrame } from "@/components/ui/BrowserFrame";
 
 type Props = {
   url: string;
+  fakeUrl: string;
   title: string;
 };
 
-export function DemoFrame({ url, title }: Props) {
+export function DemoFrame({ url, fakeUrl, title }: Props) {
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -23,7 +25,9 @@ export function DemoFrame({ url, title }: Props) {
   if (isDesktop) {
     return (
       <div className="space-y-3">
-        <DemoIframe url={url} title={title} />
+        <BrowserFrame url={fakeUrl}>
+          <DemoIframe url={url} title={title} />
+        </BrowserFrame>
         <a
           href={url}
           target="_blank"
@@ -38,12 +42,14 @@ export function DemoFrame({ url, title }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-card border border-navy/15 bg-gradient-to-br from-navy/5 to-navy/15 shadow-[0_16px_48px_-24px_rgba(30,58,95,0.35)]">
-        <div className="absolute inset-0 flex items-center justify-center font-mono text-[11px] tracking-[0.16em] text-navy/45 uppercase">
-          {title}
+      <BrowserFrame url={fakeUrl}>
+        <div className="relative aspect-[4/3] w-full bg-gradient-to-br from-navy/5 to-navy/15">
+          <div className="absolute inset-0 flex items-center justify-center font-mono text-[11px] tracking-[0.16em] text-navy/45 uppercase">
+            {title}
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-navy/15 to-transparent" />
         </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-navy/15 to-transparent" />
-      </div>
+      </BrowserFrame>
       <a
         href={url}
         target="_blank"

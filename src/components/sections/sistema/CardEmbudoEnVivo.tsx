@@ -1,60 +1,92 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 import { LiveDot } from "@/components/ui/LiveDot";
 import { Sparkline } from "@/components/ui/Sparkline";
+import { prefersReducedMotion } from "@/lib/animations/use-gsap-context";
 
 const METRICS = [
   {
     label: "Búsquedas Google Business",
     base: 412,
-    delta: [-3, 1, 4, 2, 6, 5, 8, 12],
+    delta: [3, 5, 4, 6, 8, 5, 7, 9, 6, 8],
     spark: [4, 6, 5, 7, 6, 9, 8, 12, 11, 14],
   },
   {
     label: "Conversaciones WhatsApp",
     base: 87,
-    delta: [-1, 0, 2, 1, 3, 2, 4, 6],
+    delta: [1, 2, 2, 3, 2, 4, 3, 5, 3, 4],
     spark: [2, 3, 5, 4, 6, 5, 7, 8, 9, 11],
   },
   {
     label: "Citas agendadas",
     base: 23,
-    delta: [0, 1, 0, 1, 1, 2, 2, 3],
+    delta: [1, 0, 1, 1, 2, 1, 2, 1, 2, 1],
     spark: [1, 2, 1, 3, 2, 4, 3, 5, 4, 6],
   },
 ];
 
-function useTickingNumber(base: number, delta: number[], stepMs: number) {
-  const [value, setValue] = useState(base);
-  useEffect(() => {
-    let i = 0;
-    const id = setInterval(() => {
-      i = (i + 1) % delta.length;
-      setValue((v) => v + delta[i]);
-    }, stepMs);
-    return () => clearInterval(id);
-  }, [base, delta, stepMs]);
-  return value;
-}
-
 function MetricRow({ idx }: { idx: number }) {
   const m = METRICS[idx];
-  const value = useTickingNumber(m.base, m.delta, 1800 + idx * 600);
+  const numRef = useRef<HTMLDivElement>(null);
+  const deltaRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!numRef.current) return;
+    const el = numRef.current;
+    const deltaEl = deltaRef.current;
+
+    if (prefersReducedMotion()) {
+      el.textContent = m.base.toLocaleString("es-CO");
+      return;
+    }
+
+    const target = { v: m.base };
+    let current = m.base;
+
+    const tl = gsap.timeline({ repeat: -1, delay: idx * 0.6 });
+    m.delta.forEach((d) => {
+      const next = current + d;
+      tl.to(target, {
+        v: next,
+        duration: 1.2,
+        ease: "elastic.out(1, 0.7)",
+        onStart: () => {
+          if (deltaEl) deltaEl.textContent = `+${d}`;
+        },
+        onUpdate: () => {
+          el.textContent = Math.round(target.v).toLocaleString("es-CO");
+        },
+      });
+      tl.to({}, { duration: 2.8 });
+      current = next;
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, [idx, m.base, m.delta]);
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between gap-4">
         <span className="font-mono text-[10px] tracking-[0.12em] text-cream/55 uppercase">
           {m.label}
         </span>
-        <span className="font-mono text-[10px] text-signal">+{m.delta[m.delta.length - 1]}</span>
+        <span
+          ref={deltaRef}
+          className="font-mono text-[10px] tabular-nums text-signal"
+        >
+          +{m.delta[0]}
+        </span>
       </div>
       <div className="flex items-end justify-between gap-4">
         <div
+          ref={numRef}
           className="font-sans text-3xl font-semibold tabular-nums text-cream md:text-4xl"
-          aria-live="off"
         >
-          {value.toLocaleString("es-CO")}
+          {m.base.toLocaleString("es-CO")}
         </div>
         <Sparkline
           values={m.spark}
@@ -69,9 +101,7 @@ function MetricRow({ idx }: { idx: number }) {
 
 export function CardEmbudoEnVivo() {
   return (
-    <article
-      className="relative flex min-h-[480px] flex-col overflow-hidden rounded-card-lg border border-cream/10 bg-carbon p-7 text-cream"
-    >
+    <article className="group/card relative flex min-h-[480px] flex-col overflow-hidden rounded-card-lg border border-cream/10 bg-carbon p-7 text-cream transition-all duration-300 ease-out hover:-translate-y-1 hover:border-cream/20 hover:shadow-[0_24px_48px_rgba(14,15,18,0.35)]">
       <header className="flex items-start justify-between">
         <div>
           <div className="font-mono text-[10px] tracking-[0.18em] text-operation uppercase">

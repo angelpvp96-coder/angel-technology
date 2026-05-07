@@ -15,56 +15,82 @@ const STEPS = [
 ];
 
 export function CardRutaCliente() {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
     if (prefersReducedMotion()) return;
 
-    const ctx = gsap.context(() => {
-      const cursor = ref.current!.querySelector(".rc-cursor");
-      const lines = ref.current!.querySelectorAll<SVGLineElement>(".rc-line");
-      const nodes = ref.current!.querySelectorAll(".rc-node");
+    let tl: gsap.core.Timeline | null = null;
+    let ro: ResizeObserver | null = null;
 
+    const buildTimeline = () => {
+      if (!ref.current) return;
+      tl?.kill();
+
+      const cursor = ref.current.querySelector<HTMLElement>(".rc-cursor");
+      const lines = ref.current.querySelectorAll<SVGLineElement>(".rc-line");
+      const nodes = ref.current.querySelectorAll<HTMLElement>(".rc-node");
+      const track = ref.current.querySelector<HTMLElement>(".rc-track");
+      if (!cursor || !track || nodes.length === 0) return;
+
+      const trackBox = track.getBoundingClientRect();
       const positions = Array.from(nodes).map((el) => {
-        const r = (el as HTMLElement).getBoundingClientRect();
-        const parent = ref.current!.querySelector(".rc-track")!.getBoundingClientRect();
-        return r.left - parent.left + r.width / 2;
+        const r = el.getBoundingClientRect();
+        return r.left - trackBox.left + r.width / 2;
       });
 
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.6 });
+      gsap.set(lines, { strokeDashoffset: 100 });
+      gsap.set(cursor, { x: positions[0] - 12, opacity: 1 });
+
+      tl = gsap.timeline({ repeat: -1, repeatDelay: 0.6 });
       positions.forEach((x, i) => {
-        tl.to(cursor, {
-          x: x - 12,
-          duration: 0.8,
-          ease: "power2.inOut",
-        });
-        tl.to(
-          nodes[i],
-          { scale: 1.1, duration: 0.25, ease: "back.out(2)", transformOrigin: "center" },
-          "<+0.1",
-        );
-        tl.to(nodes[i], { scale: 1, duration: 0.25 });
-        if (i < lines.length) {
-          tl.fromTo(
-            lines[i],
+        if (i === 0) return;
+        tl!
+          .to(cursor, {
+            x: x - 12,
+            duration: 0.85,
+            ease: "power2.inOut",
+          })
+          .fromTo(
+            lines[i - 1],
             { strokeDashoffset: 100 },
-            { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" },
-            "<-0.2",
-          );
-        }
+            { strokeDashoffset: 0, duration: 0.85, ease: "power2.inOut" },
+            "<",
+          )
+          .to(
+            nodes[i],
+            {
+              scale: 1.12,
+              duration: 0.25,
+              ease: "back.out(2)",
+              transformOrigin: "center",
+            },
+            "-=0.15",
+          )
+          .to(nodes[i], { scale: 1, duration: 0.25 });
       });
-      tl.to(cursor, { opacity: 0, duration: 0.3 });
-      tl.set(lines, { strokeDashoffset: 100 });
+      tl.to({}, { duration: 0.6 });
+      tl.to([cursor, ...lines], { opacity: 0, duration: 0.4 });
       tl.set(cursor, { x: positions[0] - 12, opacity: 1 });
-    }, ref);
-    return () => ctx.revert();
+      tl.set(lines, { strokeDashoffset: 100, opacity: 1 });
+    };
+
+    const t = setTimeout(buildTimeline, 80);
+    ro = new ResizeObserver(() => buildTimeline());
+    ro.observe(ref.current);
+
+    return () => {
+      clearTimeout(t);
+      tl?.kill();
+      ro?.disconnect();
+    };
   }, []);
 
   return (
     <article
       ref={ref}
-      className="relative flex min-h-[480px] flex-col overflow-hidden rounded-card-lg border border-navy/15 bg-navy p-7 text-cream"
+      className="group/card relative flex min-h-[480px] flex-col overflow-hidden rounded-card-lg border border-navy/15 bg-navy p-7 text-cream transition-all duration-300 ease-out hover:-translate-y-1 hover:border-navy hover:shadow-[0_24px_48px_rgba(14,15,18,0.25)]"
     >
       <header className="flex items-start justify-between">
         <div>
@@ -83,7 +109,6 @@ export function CardRutaCliente() {
 
       <div className="mt-12 flex flex-1 flex-col justify-center gap-10">
         <div className="rc-track relative">
-          {/* connecting lines */}
           <svg
             className="pointer-events-none absolute top-1/2 left-0 h-12 w-full -translate-y-1/2"
             viewBox="0 0 100 12"
@@ -112,10 +137,7 @@ export function CardRutaCliente() {
 
           <div className="relative grid grid-cols-5 gap-2">
             {STEPS.map(({ Icon, label }, i) => (
-              <div
-                key={label}
-                className="flex flex-col items-center gap-3"
-              >
+              <div key={label} className="flex flex-col items-center gap-3">
                 <div
                   className="rc-node flex h-12 w-12 items-center justify-center rounded-full border border-cream/20 bg-cream/[0.04] text-cream"
                   style={{ transformOrigin: "center" }}
@@ -130,12 +152,11 @@ export function CardRutaCliente() {
             ))}
           </div>
 
-          {/* Cursor */}
           <div
-            className="rc-cursor pointer-events-none absolute"
-            style={{ top: "calc(0.5rem)", left: 0 }}
+            className="rc-cursor pointer-events-none absolute top-2 left-0"
+            style={{ willChange: "transform" }}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path
                 d="M5 3 L19 12 L13 13 L11 19 Z"
                 fill="#E2632F"

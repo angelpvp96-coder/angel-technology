@@ -23,6 +23,7 @@ export interface Caso {
   subtitulo: string;
   descripcion: string[];
   demoUrl: string;
+  fakeUrl: string;
   screenshotPath: string;
   metric?: { label: string; value: string };
 }

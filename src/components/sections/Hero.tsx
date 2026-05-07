@@ -122,7 +122,7 @@ export function Hero() {
           data-hero-animate
           className="hero-cta mt-10 flex flex-col gap-3 sm:flex-row sm:items-center"
         >
-          <WhatsAppButton source="hero" variant="primary" size="lg">
+          <WhatsAppButton source="hero" variant="primary" size="lg" magnetic>
             Hablemos por WhatsApp →
           </WhatsAppButton>
           <a
