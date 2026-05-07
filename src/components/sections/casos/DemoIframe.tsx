@@ -30,27 +30,22 @@ export function DemoIframe({ url, title }: Props) {
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className="relative aspect-[4/3] w-full overflow-hidden rounded-card border border-navy/15 bg-cream shadow-[0_24px_64px_-32px_rgba(30,58,95,0.45)]"
-    >
+    <div ref={ref} className="relative aspect-[4/3] w-full bg-cream">
       {shouldLoad ? (
         <>
           <iframe
             src={url}
             title={title}
             loading="lazy"
-            className="h-full w-full origin-top-left"
-            style={{
-              pointerEvents: interactive ? "auto" : "none",
-            }}
+            className="h-full w-full"
+            style={{ pointerEvents: interactive ? "auto" : "none" }}
             sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
           />
           {!interactive && (
             <button
               type="button"
               onClick={() => setInteractive(true)}
-              className="absolute inset-0 flex items-end justify-center bg-gradient-to-b from-transparent via-transparent to-navy/30 p-4 transition-opacity hover:opacity-95"
+              className="absolute inset-0 flex items-end justify-center bg-gradient-to-b from-transparent via-transparent to-navy/30 p-4 transition-opacity hover:opacity-95 focus-visible:outline-2 focus-visible:outline-operation focus-visible:outline-offset-2"
               aria-label="Activar interacción con la demo"
             >
               <span className="rounded-button bg-cream px-4 py-2 font-mono text-[11px] tracking-[0.12em] text-navy uppercase shadow-md">

@@ -84,11 +84,7 @@ export function Navbar() {
           </ul>
 
           <div className="hidden md:block">
-            <WhatsAppButton
-              source="navbar"
-              variant={scrolled ? "primary" : "primary"}
-              size="sm"
-            >
+            <WhatsAppButton source="navbar" variant="primary" size="sm" magnetic>
               WhatsApp →
             </WhatsAppButton>
           </div>

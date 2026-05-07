@@ -7,6 +7,7 @@ type Props = {
   variant?: "primary" | "secondary" | "navy" | "ghost";
   size?: "sm" | "md" | "lg";
   className?: string;
+  magnetic?: boolean;
   children: React.ReactNode;
 };
 
@@ -16,6 +17,7 @@ export function WhatsAppButton({
   variant = "primary",
   size = "md",
   className,
+  magnetic = false,
   children,
 }: Props) {
   const href = buildWhatsAppLink({ source, message });
@@ -27,6 +29,7 @@ export function WhatsAppButton({
     variant,
     size,
     className,
+    magnetic,
     children,
   };
   return <Button {...props} />;
