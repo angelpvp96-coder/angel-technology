@@ -1,0 +1,70 @@
+import type { Paquete } from "@/types";
+
+export const PAQUETES: Paquete[] = [
+  {
+    id: "pro",
+    eyebrow: "OPERACIÓN LOCAL",
+    nombre: "Pro",
+    precio: "$3.200.000 COP",
+    precioLabel: null,
+    subprecio: "Implementación 6–8 semanas · 50% inicio / 50% entrega",
+    features: [
+      "Sitio web propio (5 secciones operativas)",
+      "Dominio profesional + correos corporativos",
+      "Google Business optimizado y verificado",
+      "WhatsApp Business con mensajería estructurada",
+      "Integración formulario → WhatsApp",
+      "Métricas básicas y reporte mensual",
+      "1 ronda de iteración post-entrega",
+    ],
+    garantia:
+      "GARANTÍA · 60 días de soporte operativo incluido",
+    ctaLabel: "Conversar en WhatsApp →",
+    ctaType: "whatsapp",
+    destacado: false,
+  },
+  {
+    id: "elite",
+    eyebrow: "OPERACIÓN MULTI-SEDE",
+    nombre: "Elite",
+    precio: "$5.700.000 COP",
+    precioLabel: null,
+    subprecio: "Implementación 8–10 semanas · 50% inicio / 50% entrega",
+    features: [
+      "Todo lo del paquete Pro",
+      "Sitio web extendido (hasta 10 secciones)",
+      "Asistente IA en WhatsApp (calificación + agendamiento)",
+      "CRM ligero y panel de operación interno",
+      "Automatizaciones de seguimiento y recordatorios",
+      "SEO local avanzado y reseñas estructuradas",
+      "Reporting semanal con KPIs definidos",
+      "3 rondas de iteración post-entrega",
+    ],
+    garantia:
+      "GARANTÍA · 90 días de soporte operativo + ajustes incluidos",
+    ctaLabel: "Conversar en WhatsApp →",
+    ctaType: "whatsapp",
+    destacado: true,
+  },
+  {
+    id: "personalizado",
+    eyebrow: "OPERACIÓN A MEDIDA",
+    nombre: "Personalizado",
+    precio: null,
+    precioLabel: "Cotización según alcance",
+    subprecio: "Diagnóstico operativo previo · plan por etapas",
+    features: [
+      "Diagnóstico digital de la operación actual",
+      "Plataformas a medida (booking, e-commerce, portal)",
+      "Integraciones con sistemas internos existentes",
+      "Asistentes IA especializados por canal",
+      "Software interno por procesos críticos",
+      "Soporte y evolución continua",
+    ],
+    garantia:
+      "ALCANCE · contrato por etapas con entregables verificables",
+    ctaLabel: "Solicitar cotización →",
+    ctaType: "form",
+    destacado: false,
+  },
+];
